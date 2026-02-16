@@ -31,7 +31,7 @@ if youtube_link:
             else:
                 try:
                     with st.spinner("વિડિયોમાંથી લખાણ (Transcript) મેળવી રહ્યા છીએ..."):
-                        # 'hi' અને 'en' બંને ભાષા સપોર્ટ કરશે, અને AttributeError ટાળવા માટે youtube_transcript_api નો ઉપયોગ કર્યો છે
+                        # AttributeError ટાળવા માટે youtube_transcript_api નો સીધો ઉપયોગ
                         transcript_list = youtube_transcript_api.YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
                         text = " ".join([i['text'] for i in transcript_list])
 
@@ -40,14 +40,7 @@ if youtube_link:
                         genai.configure(api_key=api_key)
                         model = genai.GenerativeModel("gemini-pro")
                         
-                        prompt = f"""
-                        You are a professional blog writer. 
-                        Use the following YouTube transcript to write a detailed, engaging, and SEO-friendly blog post. 
-                        Make sure to use proper headings (H1, H2, H3), bullet points, and a summary.
-                        
-                        Transcript: {text}
-                        """
-                        
+                        prompt = f"Write a detailed, SEO-friendly blog post from this YouTube transcript: {text}"
                         response = model.generate_content(prompt)
                         
                         st.markdown("---")
@@ -58,7 +51,3 @@ if youtube_link:
                 except Exception as e:
                     st.error(f"એક સમસ્યા આવી છે: {e}")
                     st.info("નોંધ: ખાતરી કરો કે વિડિયોમાં સબટાઈટલ (CC) ચાલુ છે.")
-
-# Footer
-st.markdown("---")
-st.caption("Zero Investment AI App - Built for Free")

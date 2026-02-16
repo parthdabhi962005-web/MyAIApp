@@ -30,8 +30,9 @@ if youtube_link:
                 st.error("મહેરબાની કરીને સાઈડબારમાં Gemini API Key નાખો!")
             else:
                 try:
-                    with st.spinner("વિડિયોમાંથી લખાણ (Transcript) મેળવી રહ્યા છીએ..."):
-                        # AttributeError ટાળવા માટે youtube_transcript_api નો સીધો ઉપયોગ
+                    with st.spinner("વિડિયોમાંથી લખાણ મેળવી રહ્યા છીએ..."):
+                        # 'hi' અને 'en' બંને ભાષા સપોર્ટ કરશે
+                        # AttributeError ટાળવા માટે આ રીતે કોલ કરો:
                         transcript_list = youtube_transcript_api.YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
                         text = " ".join([i['text'] for i in transcript_list])
 
@@ -40,7 +41,7 @@ if youtube_link:
                         genai.configure(api_key=api_key)
                         model = genai.GenerativeModel("gemini-pro")
                         
-                        prompt = f"Write a detailed, SEO-friendly blog post from this YouTube transcript: {text}"
+                        prompt = f"Write a professional and detailed blog post based on this transcript: {text}"
                         response = model.generate_content(prompt)
                         
                         st.markdown("---")

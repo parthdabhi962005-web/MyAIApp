@@ -29,24 +29,11 @@ if youtube_link:
                 st.error("મહેરબાની કરીને સાઈડબારમાં Gemini API Key નાખો!")
             else:
                 try:
-                    with st.spinner("વિડિયોમાંથી લખાણ (Transcript) મેળવી રહ્યા છીએ..."):
-                        # ટ્રાન્સક્રિપ્ટ મેળવવાની એડવાન્સ રીત (Auto-generated સબટાઈટલ માટે)
-                        try:
-                            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-                            
-                            # પહેલા હિન્દી અને પછી ઇંગ્લિશ ટ્રાન્સક્રિપ્ટ શોધશે (મેન્યુઅલ અથવા ઓટો-જનરેટેડ)
-                            try:
-                                transcript = transcript_list.find_transcript(['hi', 'en'])
-                            except:
-                                # જો મેન્યુઅલ ન મળે તો જે પણ ઉપલબ્ધ હોય તે લેશે
-                                transcript = transcript_list.find_generated_transcript(['hi', 'en'])
-                            
-                            transcript_data = transcript.fetch()
-                            text = " ".join([i['text'] for i in transcript_data])
-                        
-                        except Exception as t_e:
-                            st.error(f"Transcript Error: આ વિડિયોમાં સબટાઈટલ પકડવામાં સમસ્યા આવી રહી છે. ({t_e})")
-                            st.stop()
+                    with st.spinner("વિડિયોમાંથી સબટાઈટલ (Transcript) મેળવી રહ્યા છીએ..."):
+                        # સૌથી સ્ટેબલ રીત: સીધું જ હિન્દી કે ઇંગ્લિશ ટ્રાન્સક્રિપ્ટ મંગાવવી
+                        # languages=['hi', 'en'] એટલે પહેલા હિન્દી ટ્રાય કરશે, નહીંતર ઇંગ્લિશ લેશે
+                        transcript_data = YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
+                        text = " ".join([i['text'] for i in transcript_data])
 
                     with st.spinner("AI બ્લોગ પોસ્ટ લખી રહ્યું છે..."):
                         # Gemini AI કોન્ફિગરેશન
@@ -55,9 +42,7 @@ if youtube_link:
                         
                         prompt = f"""
                         You are a professional blog writer. 
-                        Use the following YouTube transcript to write a detailed, engaging, and SEO-friendly blog post. 
-                        Make sure to use proper headings (H1, H2, H3), bullet points, and a summary.
-                        
+                        Using the transcript below, write a detailed, viral, and SEO-friendly blog post. 
                         Transcript: {text}
                         """
                         
@@ -66,11 +51,11 @@ if youtube_link:
                         st.markdown("---")
                         st.markdown("### 📝 Your Generated Blog Post")
                         st.write(response.text)
-                        st.success("બ્લોગ પોસ્ટ તૈયાર થઈ ગઈ છે!")
+                        st.success("બ્લોગ તૈયાર થઈ ગયો છે!")
                         
                 except Exception as e:
-                    st.error(f"એક સમસ્યા આવી છે: {e}")
+                    st.error(f"Transcript Error: આ વિડિયોમાં સબટાઈટલ મળ્યા નથી. મહેરબાની કરીને એવો વિડિયો વાપરો જેમાં Subtitles (CC) ચાલુ હોય. (Error: {e})")
 
 # Footer
 st.markdown("---")
-st.caption("નોંધ: આ એપ ફક્ત એવા જ વિડિયો પર કામ કરશે જેમાં સબટાઈટલ્સ (CC) ચાલુ હોય.")
+st.caption("નોંધ: આ એપ ફક્ત સબટાઈટલ (CC) ધરાવતા વિડિયો પર જ કામ કરશે.")

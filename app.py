@@ -33,7 +33,7 @@ if st.button("Generate Blog Post"):
         try:
             with st.spinner("Listening to the video..."):
                 # 1. Get Transcript
-                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+                transcript_list = YouTubeTranscript.Api.get_transcript(video_id)
                 transcript_text = " ".join([i["text"] for i in transcript_list])
 
             with st.spinner("Writing the blog..."):
@@ -58,4 +58,5 @@ if st.button("Generate Blog Post"):
 
         except Exception as e:
             st.error(f"Error: {e}. Make sure the video has captions/subtitles enabled.")
+
 

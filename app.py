@@ -1,6 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
-from youtube_transcript_api import YouTubeTranscriptApi
+import youtube_transcript_api as yta # લાયબ્રેરીને Alias આપ્યો છે
 
 st.set_page_config(page_title="Video to Blog AI", page_icon="📝")
 st.title("🎥 YouTube Video to Blog Post Generator")
@@ -25,17 +25,15 @@ if youtube_link:
                 st.error("Please enter API Key!")
             else:
                 try:
-                    with st.spinner("Processing Transcript..."):
-                        # સીધું ફંક્શન કોલ કરવાની સાચી રીત
-                        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
+                    with st.spinner("Processing..."):
+                        # 'get_transcript' ને બોલાવવાની આ સૌથી સુરક્ષિત રીત છે
+                        transcript = yta.YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
                         text = " ".join([i['text'] for i in transcript])
 
                         genai.configure(api_key=api_key)
                         model = genai.GenerativeModel("gemini-pro")
-                        response = model.generate_content(f"Write a viral blog post from this transcript: {text}")
-                        
-                        st.markdown("### Generated Blog Post")
-                        st.write(response.text)
-                        st.success("Generated Successfully!")
+                        response = model.generate_content(f"Write a viral blog post from this: {text}")
+                        st.markdown(response.text)
+                        st.success("Success!")
                 except Exception as e:
                     st.error(f"Error: {e}")

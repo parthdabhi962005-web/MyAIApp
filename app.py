@@ -1,8 +1,7 @@
 import streamlit as st
 import google.generativeai as genai
-import youtube_transcript_api as yta # લાયબ્રેરીને Alias આપ્યો છે
+from youtube_transcript_api import YouTubeTranscriptApi
 
-# પેજ કન્ફિગરેશન
 st.set_page_config(page_title="Video to Blog AI", page_icon="📝")
 st.title("🎥 YouTube Video to Blog Post Generator")
 
@@ -23,23 +22,20 @@ if youtube_link:
 
         if st.button("Generate Blog Post"):
             if not api_key:
-                st.error("મહેરબાની કરીને API Key નાખો!")
+                st.error("Please enter API Key!")
             else:
                 try:
-                    with st.spinner("Transcript મેળવી રહ્યા છીએ..."):
-                        # એરર દૂર કરવા માટેની નવી પદ્ધતિ
-                        transcript_list = yta.YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
-                        text = " ".join([i['text'] for i in transcript_list])
+                    with st.spinner("Processing Transcript..."):
+                        # સીધું ફંક્શન કોલ કરવાની સાચી રીત
+                        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
+                        text = " ".join([i['text'] for i in transcript])
 
-                    with st.spinner("Gemini AI બ્લોગ લખી રહ્યું છે..."):
                         genai.configure(api_key=api_key)
                         model = genai.GenerativeModel("gemini-pro")
-                        response = model.generate_content(f"Write a viral, detailed blog post with headings based on this video transcript: {text}")
+                        response = model.generate_content(f"Write a viral blog post from this transcript: {text}")
                         
-                        st.markdown("---")
-                        st.markdown("### 📝 Your Generated Blog Post")
+                        st.markdown("### Generated Blog Post")
                         st.write(response.text)
-                        st.success("સફળતાપૂર્વક બ્લોગ તૈયાર થઈ ગયો!")
+                        st.success("Generated Successfully!")
                 except Exception as e:
                     st.error(f"Error: {e}")
-                    st.info("જો હજુ પણ એરર આવે, તો એકવાર Streamlit Dashboard પર જઈને 'Reboot App' કરો.")

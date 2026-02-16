@@ -14,30 +14,29 @@ api_key = st.sidebar.text_input("Enter Google Gemini API Key", type="password")
 # Input for YouTube Link
 youtube_link = st.text_input("Paste YouTube Video Link Here:")
 
-# આ કોડ જૂની Line 17-18 ની જગ્યાએ મૂકો
+video_id = None
 if youtube_link:
     if "v=" in youtube_link:
         video_id = youtube_link.split("v=")[1].split("&")[0]
     elif "youtu.be/" in youtube_link:
         video_id = youtube_link.split("youtu.be/")[1].split("?")[0]
-    else:
-        video_id = None
     
     if video_id:
-        st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
+        st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_container_width=True)
 
 if st.button("Generate Blog Post"):
     if not api_key:
         st.error("Please enter your Google Gemini API Key in the sidebar!")
+    elif not video_id:
+        st.error("Please enter a valid YouTube link!")
     else:
         try:
             with st.spinner("Listening to the video..."):
-                # 1. Get Transcript
-                transcript_list = YouTubeTranscript.Api.get_transcript(video_id)
+                # Correct function call
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
                 transcript_text = " ".join([i["text"] for i in transcript_list])
 
             with st.spinner("Writing the blog..."):
-                # 2. Call Gemini AI
                 genai.configure(api_key=api_key)
                 model = genai.GenerativeModel("gemini-pro")
                 
@@ -51,12 +50,9 @@ if st.button("Generate Blog Post"):
                 
                 response = model.generate_content(prompt)
                 
-                # 3. Show Output
                 st.markdown("## 📝 Your Blog Post:")
                 st.write(response.text)
                 st.success("Done! Copy your blog post above.")
 
         except Exception as e:
-            st.error(f"Error: {e}. Make sure the video has captions/subtitles enabled.")
-
-
+            st.error(f"Error: {e}. \n\nTips: \n1. Make sure the video has CC (Subtitles) enabled. \n2. Check if the video is not private.")

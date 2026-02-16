@@ -1,5 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
+# AttributeError થી બચવા માટે આ રીતે ઈમ્પોર્ટ કરવું જરૂરી છે
 import youtube_transcript_api 
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -30,8 +31,8 @@ if youtube_link:
             else:
                 try:
                     with st.spinner("વિડિયોમાંથી લખાણ (Transcript) મેળવી રહ્યા છીએ..."):
-                        # 'hi' અને 'en' બંને ભાષા સપોર્ટ કરશે
-                        transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
+                        # 'hi' અને 'en' બંને ભાષા સપોર્ટ કરશે, અને AttributeError ટાળવા માટે youtube_transcript_api નો ઉપયોગ કર્યો છે
+                        transcript_list = youtube_transcript_api.YouTubeTranscriptApi.get_transcript(video_id, languages=['hi', 'en'])
                         text = " ".join([i['text'] for i in transcript_list])
 
                     with st.spinner("AI બ્લોગ પોસ્ટ લખી રહ્યું છે..."):

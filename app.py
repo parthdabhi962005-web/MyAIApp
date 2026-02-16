@@ -14,9 +14,17 @@ api_key = st.sidebar.text_input("Enter Google Gemini API Key", type="password")
 # Input for YouTube Link
 youtube_link = st.text_input("Paste YouTube Video Link Here:")
 
+# આ કોડ જૂની Line 17-18 ની જગ્યાએ મૂકો
 if youtube_link:
-    video_id = youtube_link.split("=")[1]
-    st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
+    if "v=" in youtube_link:
+        video_id = youtube_link.split("v=")[1].split("&")[0]
+    elif "youtu.be/" in youtube_link:
+        video_id = youtube_link.split("youtu.be/")[1].split("?")[0]
+    else:
+        video_id = None
+    
+    if video_id:
+        st.image(f"http://img.youtube.com/vi/{video_id}/0.jpg", use_column_width=True)
 
 if st.button("Generate Blog Post"):
     if not api_key:
@@ -50,3 +58,4 @@ if st.button("Generate Blog Post"):
 
         except Exception as e:
             st.error(f"Error: {e}. Make sure the video has captions/subtitles enabled.")
+

@@ -32,7 +32,7 @@ if st.button("Generate Blog Post"):
     else:
         try:
             with st.spinner("Listening to the video..."):
-                # Correct function call
+                # અહીં ફેરફાર કર્યો છે: સાચો ફંક્શન કોલ
                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
                 transcript_text = " ".join([i["text"] for i in transcript_list])
 
@@ -40,13 +40,7 @@ if st.button("Generate Blog Post"):
                 genai.configure(api_key=api_key)
                 model = genai.GenerativeModel("gemini-pro")
                 
-                prompt = f"""
-                You are an expert content writer. 
-                Summarize the following YouTube video transcript into a highly engaging blog post.
-                Use bullet points, a catchy title, and subheadings.
-                
-                Transcript: {transcript_text}
-                """
+                prompt = f"Summarize this YouTube transcript into a viral blog post with title and subheadings: {transcript_text}"
                 
                 response = model.generate_content(prompt)
                 
@@ -55,4 +49,4 @@ if st.button("Generate Blog Post"):
                 st.success("Done! Copy your blog post above.")
 
         except Exception as e:
-            st.error(f"Error: {e}. \n\nTips: \n1. Make sure the video has CC (Subtitles) enabled. \n2. Check if the video is not private.")
+            st.error(f"Error: {e}")
